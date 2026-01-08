@@ -28,7 +28,7 @@ $user_id = $_GET['user_id'] ?? 1; // Par défaut user_id = 1 pour la démo
     <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
         <!-- Logo/Titre -->
         <h1 style="margin: 0; font-size: 24px;">
-            <a href="/" style="color: white; text-decoration: none;">Mini MVC</a>
+            <a href="/" style="color: white; text-decoration: none;">FOURTOUT</a>
         </h1>
         
         <!-- Navigation -->
@@ -61,7 +61,7 @@ $user_id = $_GET['user_id'] ?? 1; // Par défaut user_id = 1 pour la démo
                     </a>
                 </li>
                 <li>
-                    <a href="/products/create" 
+                    <a href="/login" 
                        style="color: <?= $isProductsCreate ? '#ffc107' : 'white' ?>; 
                               text-decoration: none; 
                               padding: 8px 15px; 
@@ -70,7 +70,7 @@ $user_id = $_GET['user_id'] ?? 1; // Par défaut user_id = 1 pour la démo
                               transition: background-color 0.3s;"
                        onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
                        onmouseout="this.style.backgroundColor='transparent'">
-                        ➕ Ajouter un produit
+                        Connexion
                     </a>
                 </li>
                 <!-- <li>

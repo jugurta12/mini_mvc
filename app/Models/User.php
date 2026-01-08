@@ -1,6 +1,5 @@
 <?php
 
-// Ici je définit le namespace ou il y aura ma class
 namespace Mini\Models;
 
 use Mini\Core\Database;
@@ -11,6 +10,7 @@ class User
     private $id;
     private $nom;
     private $email;
+    private $password; // pour l’auth
 
     // =====================
     // Getters / Setters
@@ -26,7 +26,7 @@ class User
         $this->id = $id;
     }
 
-    public function getnom()
+    public function getNom()
     {
         return $this->nom;
     }
@@ -46,14 +46,20 @@ class User
         $this->email = $email;
     }
 
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
     // =====================
     // Méthodes CRUD
     // =====================
 
-    /**
-     * Récupère tous les utilisateurs
-     * @return array
-     */
     public static function getAll()
     {
         $pdo = Database::getPDO();
@@ -61,11 +67,6 @@ class User
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Récupère un utilisateur par son ID
-     * @param int $id
-     * @return array|null
-     */
     public static function findById($id)
     {
         $pdo = Database::getPDO();
@@ -74,11 +75,6 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Récupère un utilisateur par son email
-     * @param string $email
-     * @return array|null
-     */
     public static function findByEmail($email)
     {
         $pdo = Database::getPDO();
@@ -87,36 +83,57 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Crée un nouvel utilisateur
-     * @return bool
-     */
     public function save()
     {
         $pdo = Database::getPDO();
-        $stmt = $pdo->prepare("INSERT INTO user (nom, email) VALUES (?, ?)");
-        return $stmt->execute([$this->nom, $this->email]);
+        // hash du mot de passe
+        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("INSERT INTO user (nom, email, password) VALUES (?, ?, ?)");
+        return $stmt->execute([$this->nom, $this->email, $hashedPassword]);
     }
 
-    /**
-     * Met à jour les informations d’un utilisateur existant
-     * @return bool
-     */
     public function update()
     {
         $pdo = Database::getPDO();
-        $stmt = $pdo->prepare("UPDATE user SET nom = ?, email = ? WHERE id = ?");
-        return $stmt->execute([$this->nom, $this->email, $this->id]);
+        // si on veut mettre à jour le mot de passe
+        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("UPDATE user SET nom = ?, email = ?, password = ? WHERE id = ?");
+        return $stmt->execute([$this->nom, $this->email, $hashedPassword, $this->id]);
     }
 
-    /**
-     * Supprime un utilisateur
-     * @return bool
-     */
     public function delete()
     {
         $pdo = Database::getPDO();
         $stmt = $pdo->prepare("DELETE FROM user WHERE id = ?");
         return $stmt->execute([$this->id]);
+    }
+
+    // =====================
+    // AUTHENTIFICATION
+    // =====================
+
+    /**
+     * Authentifie un utilisateur
+     */
+    public static function authenticate(string $email, string $password): bool
+    {
+        $pdo = Database::getPDO();
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user) {
+            return false;
+        }
+
+        if (!password_verify($password, $user['password'])) {
+            return false;
+        }
+
+        // Connexion réussie
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_email'] = $user['email'];
+
+        return true;
     }
 }
