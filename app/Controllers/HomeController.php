@@ -56,8 +56,19 @@ class HomeController extends Controller
         $this->render('home/create-user');
     }
 
-    public function createUser(): void
-    {
-        // À adapter si besoin
-    }
+  public function createUser(): void
+{
+    $nom = $_POST['nom'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+
+    $user = new \Mini\Models\User();
+    $user->setNom($nom);
+    $user->setEmail($email);
+    $user->setPassword($password); // mot de passe en clair
+    $user->save(); // -> sera hashé automatiquement
+
+    $this->redirect('/users');
+}
+
 }

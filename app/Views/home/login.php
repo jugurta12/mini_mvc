@@ -14,4 +14,9 @@
     <input type="password" name="password" required><br><br>
 
     <button type="submit">Se connecter</button>
+    <p style="margin-top: 15px;">
+    Pas encore inscrit ? 
+    <a href="create-user.php" style="color:#007bff; text-decoration:none;">Créez un compte</a>
+</p>
+
 </form>
