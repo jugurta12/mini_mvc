@@ -13,62 +13,67 @@ class HomeController extends Controller
         $this->render('home/index');
     }
 
-    // =====================
-    // AUTHENTIFICATION
-    // =====================
-
+    // Affiche le formulaire de login
     public function login(): void
     {
         $this->render('home/login');
     }
 
-    public function authenticate(): void
-    {
-        $email = $_POST['email'] ?? '';
-        $password = $_POST['password'] ?? '';
+    // Traite la connexion
+    public function authenticate()
+{
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
 
-        if (User::authenticate($email, $password)) {
-            $this->redirect('/');
-        }
+    // récupère l'utilisateur par email
+    $user = User::findByEmail($email);
 
-        $_SESSION['error'] = 'Email ou mot de passe incorrect';
-        $this->redirect('/login');
+    // vérifie si password existe et correspond
+    if ($user && !empty($user['password']) && password_verify($password, $user['password'])) {
+        $_SESSION['user'] = $user;
+        header('Location: /');
+        exit;
+    } else {
+        $error = "Mot de passe incorrect";
+        $this->render('home/login', ['error' => $error]);
     }
+}
 
     public function logout(): void
     {
         session_destroy();
-        $this->redirect('/login');
+        header('Location: /login');
+        exit;
     }
 
-    // =====================
-    // USERS (si tu les gardes)
-    // =====================
-
+    // Liste des utilisateurs
     public function users(): void
     {
         $users = User::getAll();
         $this->render('home/users', ['users' => $users]);
     }
 
+    // Formulaire création utilisateur
     public function showCreateUserForm(): void
     {
         $this->render('home/create-user');
     }
 
-  public function createUser(): void
-{
-    $nom = $_POST['nom'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
+    // Crée un utilisateur
+    public function createUser(): void
+    {
+        $nom = $_POST['nom'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
 
-    $user = new \Mini\Models\User();
-    $user->setNom($nom);
-    $user->setEmail($email);
-    $user->setPassword($password); // mot de passe en clair
-    $user->save(); // -> sera hashé automatiquement
+        $user = new User();
+        $user->setNom($nom);
+        $user->setEmail($email);
+        $user->setPassword($password); // sera hashé dans save()
+        $user->save();
 
-    $this->redirect('/users');
-}
-
+        $_SESSION['user_name'] = $nom;
+        header('Location: /');
+        exit;
+    }
 }

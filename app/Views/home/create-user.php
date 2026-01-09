@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Mini\Models\User;
-session_start();
 
 $error = '';
 $success = '';
@@ -56,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="message success"><?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
 
-    <form method="POST" action="create-user.php">
+    <form method="POST" action="/create-user">
         <label for="nom">Nom :</label>
         <input type="text" id="nom" name="nom" placeholder="Entrez le nom" required>
 
@@ -70,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <p style="margin-top: 15px;">
-        <a href="login.php">← Retour à la page de connexion</a>
+        <a href="/login">← Retour à la page de connexion</a>
     </p>
 </div>
 </body>

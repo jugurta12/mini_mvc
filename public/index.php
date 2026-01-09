@@ -1,6 +1,9 @@
 <?php
 
+
 declare(strict_types=1);
+// Démarrage de la session
+session_start();
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -9,9 +12,6 @@ use Mini\Controllers\HomeController;
 use Mini\Controllers\ProductController;
 use Mini\Controllers\CartController;
 use Mini\Controllers\OrderController;
-
-// Démarrage de la session
-session_start();
 
 // Table des routes
 $routes = [
@@ -26,7 +26,8 @@ $routes = [
     // Users (si tu les gardes)
     ['GET', '/users', [HomeController::class, 'users']],
     ['POST', '/users', [HomeController::class, 'createUser']],
-    ['GET', '/users/create', [HomeController::class, 'showCreateUserForm']],
+    ['GET', '/create-user', [HomeController::class, 'showCreateUserForm']],
+    ['POST', '/create-user', [HomeController::class, 'createUser']],
 
     // Products
     ['GET', '/products', [ProductController::class, 'listProducts']],

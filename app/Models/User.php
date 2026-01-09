@@ -10,56 +10,22 @@ class User
     private $id;
     private $nom;
     private $email;
-    private $password; // pour l’auth
+    private $password;
 
-    // =====================
     // Getters / Setters
-    // =====================
+    public function getId() { return $this->id; }
+    public function setId($id) { $this->id = $id; }
 
-    public function getId()
-    {
-        return $this->id;
-    }
+    public function getNom() { return $this->nom; }
+    public function setNom($nom) { $this->nom = $nom; }
 
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
+    public function getEmail() { return $this->email; }
+    public function setEmail($email) { $this->email = $email; }
 
-    public function getNom()
-    {
-        return $this->nom;
-    }
+    public function getPassword() { return $this->password; }
+    public function setPassword($password) { $this->password = $password; }
 
-    public function setNom($nom)
-    {
-        $this->nom = $nom;
-    }
-
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    }
-
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    public function setPassword($password)
-    {
-        $this->password = $password;
-    }
-
-    // =====================
-    // Méthodes CRUD
-    // =====================
-
+    // CRUD
     public static function getAll()
     {
         $pdo = Database::getPDO();
@@ -86,7 +52,6 @@ class User
     public function save()
     {
         $pdo = Database::getPDO();
-        // hash du mot de passe
         $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("INSERT INTO user (nom, email, password) VALUES (?, ?, ?)");
         return $stmt->execute([$this->nom, $this->email, $hashedPassword]);
@@ -95,7 +60,6 @@ class User
     public function update()
     {
         $pdo = Database::getPDO();
-        // si on veut mettre à jour le mot de passe
         $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("UPDATE user SET nom = ?, email = ?, password = ? WHERE id = ?");
         return $stmt->execute([$this->nom, $this->email, $hashedPassword, $this->id]);
@@ -108,13 +72,7 @@ class User
         return $stmt->execute([$this->id]);
     }
 
-    // =====================
-    // AUTHENTIFICATION
-    // =====================
-
-    /**
-     * Authentifie un utilisateur
-     */
+    // AUTH
     public static function authenticate(string $email, string $password): bool
     {
         $pdo = Database::getPDO();
@@ -122,18 +80,11 @@ class User
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$user) {
-            return false;
-        }
+        if (!$user) return false;
 
-        if (!password_verify($password, $user['password'])) {
-            return false;
-        }
+        if (!password_verify($password, $user['password'])) return false;
 
-        // Connexion réussie
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_email'] = $user['email'];
-
+        $_SESSION['user'] = $user;
         return true;
     }
 }

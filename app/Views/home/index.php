@@ -26,4 +26,6 @@
     </a>
 
 </div>
-
+<?php if (!empty($_SESSION['user_name'])): ?>
+    <h2>Bienvenue, <?= htmlspecialchars($_SESSION['user_name']) ?> !</h2>
+<?php endif; ?>
