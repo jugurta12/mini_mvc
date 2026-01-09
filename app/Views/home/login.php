@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 $error = $_SESSION['error'] ?? '';
 unset($_SESSION['error']);
+
+// Vérifie si un message GET est passé (ex: redirection depuis "Mes commandes")
+$loginWarning = $_GET['message'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +20,7 @@ unset($_SESSION['error']);
         input { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
         button { padding: 10px 20px; background-color:#007bff; color:white; border:none; border-radius:4px; cursor:pointer; }
         button:hover { background-color:#0056b3; }
-        .message { padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+        .message { padding: 10px; margin-bottom: 15px; border-radius: 4px; text-align: center; }
         .error { background-color:#f8d7da; color:#721c24; }
         .success { background-color:#d4edda; color:#155724; }
         a { color:#007bff; text-decoration:none; }
@@ -35,8 +38,16 @@ unset($_SESSION['error']);
         </form>
     <?php else: ?>
 
+        <!-- Message d'erreur du login -->
         <?php if (!empty($error)): ?>
             <div class="message error"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+
+        <!-- Message avertissement pour redirection depuis commandes -->
+        <?php if ($loginWarning === 'login_required'): ?>
+            <div id="login-warning" class="message error">
+                ⚠️ Il faut vous connecter pour voir l'historique des commandes.
+            </div>
         <?php endif; ?>
 
         <form method="POST" action="/login">
@@ -58,3 +69,4 @@ unset($_SESSION['error']);
 </div>
 </body>
 </html>
+

@@ -64,7 +64,8 @@
                 <?php if ($product['stock'] > 0): ?>
                     <form method="POST" action="/cart/add-from-form" style="margin-top: 30px;">
                         <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['id']) ?>">
-                        <input type="hidden" name="user_id" value="1">
+                        <!-- On récupère l'ID de l'utilisateur connecté -->
+                        <input type="hidden" name="user_id" value="<?= htmlspecialchars($_SESSION['user']['id'] ?? 1) ?>">
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <label for="quantite" style="font-weight: bold; color: #333;">Quantité :</label>
                             <input 
@@ -95,10 +96,9 @@
         
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
             <a href="/products" style="color: #007bff; text-decoration: none;">← Retour à la liste des produits</a>
-            <a href="/cart?user_id=1" style="padding: 10px 20px; background-color: #ffc107; color: #000; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            <a href="/cart?user_id=<?= htmlspecialchars($_SESSION['user']['id'] ?? 1) ?>" style="padding: 10px 20px; background-color: #ffc107; color: #000; text-decoration: none; border-radius: 4px; font-weight: bold;">
                 🛒 Voir mon panier
             </a>
         </div>
     <?php endif; ?>
 </div>
-

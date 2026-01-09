@@ -1,3 +1,14 @@
+<?php
+// Démarre la session si ce n'est pas déjà fait
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// On vérifie si l'utilisateur est connecté
+$isConnected = isset($_SESSION['user']);
+$user_id_session = $_SESSION['user'] ?? 1; // Par défaut pour la démo si nécessaire
+?>
+
 <!-- Vue du panier -->
 <div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
@@ -20,8 +31,14 @@
     <?php if (empty($cartItems)): ?>
         <div style="text-align: center; padding: 60px; background-color: #f8f9fa; border-radius: 8px;">
             <div style="font-size: 64px; margin-bottom: 20px;">🛒</div>
-            <h3 style="color: #666; margin-bottom: 15px;">Votre panier est vide</h3>
-            <p style="color: #999; margin-bottom: 30px;">Ajoutez des produits à votre panier pour commencer vos achats.</p>
+            <h3 style="color: #666; margin-bottom: 15px;">
+                <?php if ($isConnected): ?>
+                    Ajoutez des produits à votre panier pour commencer vos achats.
+                <?php else: ?>
+                    
+                <?php endif; ?>
+            </h3>
+            <p style="color: #999; margin-bottom: 30px;">Vous n'avez pas encore ajouté d'article.</p>
             <a href="/products" style="padding: 12px 30px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">
                 Voir les produits
             </a>
@@ -147,15 +164,21 @@
                         <span style="font-size: 24px; font-weight: bold; color: #007bff;"><?= number_format((float)$total, 2, ',', ' ') ?> €</span>
                     </div>
                     
-                    <form method="POST" action="/orders/create">
-                        <input type="hidden" name="user_id" value="<?= htmlspecialchars($user_id) ?>">
-                        <button 
-                            type="submit" 
-                            style="width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold;"
-                        >
-                            ✅ Valider la commande
-                        </button>
-                    </form>
+                    <?php if ($isConnected): ?>
+                        <form method="POST" action="/orders/create">
+                            <input type="hidden" name="user_id" value="<?= htmlspecialchars($user_id) ?>">
+                            <button 
+                                type="submit" 
+                                style="width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold;"
+                            >
+                                ✅ Valider la commande
+                            </button>
+                        </form>
+                    <?php else: ?>
+                        <div style="text-align: center; padding: 15px; background-color: #fff3cd; border-radius: 4px; color: #856404; font-weight: bold;">
+                            Connectez-vous pour passer une commande.
+                        </div>
+                    <?php endif; ?>
                     
                     <div style="margin-top: 15px; text-align: center;">
                         <a href="/products" style="color: #007bff; text-decoration: none; font-size: 14px;">
@@ -167,4 +190,3 @@
         </div>
     <?php endif; ?>
 </div>
-

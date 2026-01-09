@@ -76,7 +76,7 @@
                 <div>
                     <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Client</div>
                     <div style="font-weight: bold; color: #333;">
-                        <?= htmlspecialchars($order['user_nom'] ?? 'Utilisateur #' . $order['user_id']) ?>
+                       <?= htmlspecialchars($order['nom'] ?? 'Utilisateur #' . $order['user_id']) ?>
                     </div>
                     <div style="font-size: 12px; color: #666;">
                         <?= htmlspecialchars($order['user_email'] ?? '') ?>

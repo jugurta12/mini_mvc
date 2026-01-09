@@ -20,24 +20,27 @@ class HomeController extends Controller
     }
 
     // Traite la connexion
-    public function authenticate()
+   public function authenticate(): void
 {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
 
     // récupère l'utilisateur par email
-    $user = User::findByEmail($email);
+    $user = \Mini\Models\User::findByEmail($email);
 
-    // vérifie si password existe et correspond
     if ($user && !empty($user['password']) && password_verify($password, $user['password'])) {
+        // connexion réussie
         $_SESSION['user'] = $user;
         header('Location: /');
         exit;
     } else {
-        $error = "Mot de passe incorrect";
-        $this->render('home/login', ['error' => $error]);
+        // email ou mot de passe incorrect
+        $_SESSION['error'] = "Email ou mot de passe incorrect";
+        header('Location: /login');
+        exit;
     }
 }
+
 
     public function logout(): void
     {

@@ -17,66 +17,18 @@ class Cart
     // =====================
     // Getters / Setters
     // =====================
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    public function setUserId($user_id)
-    {
-        $this->user_id = $user_id;
-    }
-
-    public function getProductId()
-    {
-        return $this->product_id;
-    }
-
-    public function setProductId($product_id)
-    {
-        $this->product_id = $product_id;
-    }
-
-    public function getQuantite()
-    {
-        return $this->quantite;
-    }
-
-    public function setQuantite($quantite)
-    {
-        $this->quantite = $quantite;
-    }
-
-    public function getCreatedAt()
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt($created_at)
-    {
-        $this->created_at = $created_at;
-    }
-
-    public function getUpdatedAt()
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt($updated_at)
-    {
-        $this->updated_at = $updated_at;
-    }
+    public function getId() { return $this->id; }
+    public function setId($id) { $this->id = $id; }
+    public function getUserId() { return $this->user_id; }
+    public function setUserId($user_id) { $this->user_id = $user_id; }
+    public function getProductId() { return $this->product_id; }
+    public function setProductId($product_id) { $this->product_id = $product_id; }
+    public function getQuantite() { return $this->quantite; }
+    public function setQuantite($quantite) { $this->quantite = $quantite; }
+    public function getCreatedAt() { return $this->created_at; }
+    public function setCreatedAt($created_at) { $this->created_at = $created_at; }
+    public function getUpdatedAt() { return $this->updated_at; }
+    public function setUpdatedAt($updated_at) { $this->updated_at = $updated_at; }
 
     // =====================
     // Méthodes CRUD
@@ -84,8 +36,6 @@ class Cart
 
     /**
      * Récupère tous les articles du panier d'un utilisateur
-     * @param int $user_id
-     * @return array
      */
     public static function getByUserId($user_id)
     {
@@ -104,9 +54,6 @@ class Cart
 
     /**
      * Récupère un article du panier par user_id et product_id
-     * @param int $user_id
-     * @param int $product_id
-     * @return array|null
      */
     public static function findByUserAndProduct($user_id, $product_id)
     {
@@ -118,8 +65,6 @@ class Cart
 
     /**
      * Calcule le total du panier d'un utilisateur
-     * @param int $user_id
-     * @return float
      */
     public static function getTotalByUserId($user_id)
     {
@@ -137,19 +82,19 @@ class Cart
 
     /**
      * Ajoute ou met à jour un produit dans le panier
-     * @return bool
      */
     public function save()
     {
         $pdo = Database::getPDO();
-        
-        // Vérifie si l'article existe déjà dans le panier
+
+        // Vérifie si l'article existe déjà
         $existing = self::findByUserAndProduct($this->user_id, $this->product_id);
-        
+
         if ($existing) {
-            // Met à jour la quantité
+            // ✅ Incrémente la quantité si déjà présent
+            $newQty = $existing['quantite'] + $this->quantite;
             $stmt = $pdo->prepare("UPDATE panier SET quantite = ? WHERE user_id = ? AND product_id = ?");
-            return $stmt->execute([$this->quantite, $this->user_id, $this->product_id]);
+            return $stmt->execute([$newQty, $this->user_id, $this->product_id]);
         } else {
             // Ajoute un nouvel article
             $stmt = $pdo->prepare("INSERT INTO panier (user_id, product_id, quantite) VALUES (?, ?, ?)");
@@ -159,7 +104,6 @@ class Cart
 
     /**
      * Supprime un article du panier
-     * @return bool
      */
     public function delete()
     {
@@ -170,8 +114,6 @@ class Cart
 
     /**
      * Vide le panier d'un utilisateur
-     * @param int $user_id
-     * @return bool
      */
     public static function clearByUserId($user_id)
     {
@@ -180,4 +122,3 @@ class Cart
         return $stmt->execute([$user_id]);
     }
 }
-
